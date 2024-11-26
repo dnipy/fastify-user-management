@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String?  @unique
+  phone     String   @unique
+  email     String?  @unique
+  avatar_id String?
+  age       Int?
+  // profile
+  profile   Profile? @relation()
+  avatar    File?    @relation(fields: [avatar_id], references: [id])
+
+  isActive  Boolean  @default(true)
+  isDeleted Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive, isDeleted])
+  @@index([createdAt])
+  @@index([age])
+}
+
+model Profile {
+  id      String @id @default(uuid())
+  user_id String @unique
+  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  first_name String?
+  last_name  String?
+  bio        String?
+  address    String?
+  banners    File[]
+
+  @@index([user_id])
+}
+
+model File {
+  id       String  @id @default(uuid())
+  name     String?
+  src      String
+  isActive Boolean @default(true)
+
+  user    User[]
+  profile Profile[]
+
+  @@index([isActive])
+}
