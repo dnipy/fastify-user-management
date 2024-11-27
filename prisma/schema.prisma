@@ -25,7 +25,7 @@ model User {
   avatar    File?    @relation(fields: [avatar_id], references: [id])
 
   isActive  Boolean  @default(true)
-  isDeleted Boolean  @default(true)
+  isDeleted Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

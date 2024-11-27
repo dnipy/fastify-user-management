@@ -13,5 +13,9 @@ export async function BaseRouter(fastify: FastifyInstance) {
         })
     })
 
+    fastify.get('/health', async (req, rep) => {
+        return rep.status(200).send({ status: 'ok' });
+    });
+
     fastify.register(ApiRouter, { prefix: 'api/v1' })
 }

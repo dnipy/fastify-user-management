@@ -1,17 +1,26 @@
 import { FastifyInstance } from "fastify";
+import { InitApp } from "./initApp";
+import { GlobalPluginRegister } from "../plugins";
+import { BaseRouter } from "..";
 
-const Bootstrap = async (app: FastifyInstance) => {
-    const PORT = Number(process.env.FASTIFY_PORT) || 8000
+
+/**
+ * @param app 
+ * @step_one init app
+ * @step_two register global plugins and middlewares
+ * @step_three register router (all routes)
+ */
+export const bootstrap = (app: FastifyInstance) => {
     try {
-        await app.listen({
-            port: PORT,
-        });
-        console.log(`Server is running on http://localhost:${PORT}`);
-    } catch (err) {
-        console.log(err);
-        process.exit(1);
+        InitApp(app);
+        GlobalPluginRegister(app)
+        app.register(BaseRouter);
     }
-};
-
-
-export { Bootstrap }
+    catch (e) {
+        console.log({
+            e,
+            message: 'error while bootstraping app!',
+            code: '500'
+        })
+    }
+}
