@@ -9,7 +9,6 @@ export async function BaseRouter(fastify: FastifyInstance) {
             route: '/',
             from: req.ip,
             agent,
-
         })
     })
 

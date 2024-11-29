@@ -2,7 +2,6 @@ import fastifyRateLimit from '@fastify/rate-limit';
 import { FastifyInstance } from 'fastify'
 import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
-export * from './db'
 
 export const GlobalPluginRegister = async (fastify: FastifyInstance) => {
 
@@ -32,7 +31,7 @@ export const GlobalPluginRegister = async (fastify: FastifyInstance) => {
                 url: 'https://swagger.io',
                 description: 'Find more info here',
             },
-            host: 'localhost:3000',
+            host: `localhost:${process?.env?.FASTIFY_PORT}`,
             schemes: ['http'],
             consumes: ['application/json'],
             produces: ['application/json'],
@@ -54,3 +53,6 @@ export const GlobalPluginRegister = async (fastify: FastifyInstance) => {
     });
 
 }
+
+export * from './db'
+export * from './db/cleanTests'

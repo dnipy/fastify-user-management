@@ -1,8 +1,6 @@
-import { FastifyInstance, FastifyRequest } from 'fastify';
-import { Prisma } from '../../plugins';
-import { user_add_schema, user_all_schema } from '../../schemas/users';
-import { add_user, get_all_users, get_user_by_id, get_user_count } from '../../services/users';
-
+import { FastifyInstance } from 'fastify';
+import { user_add_schema, user_all_schema, user_delete_schema, user_edit_profile_schema, user_edit_schema, user_find_schema } from '../../schemas/users';
+import { USER_CONTROLLER } from '../../controllers';
 
 /**
  * @base_url  /api/v1/users
@@ -10,37 +8,24 @@ import { add_user, get_all_users, get_user_by_id, get_user_count } from '../../s
  */
 export async function UserRoutes(fastify: FastifyInstance) {
 
-
     /**
      * @logic : return list of users
      */
     fastify.get(
         '/',
-        {
-            schema: user_all_schema,
-        },
-        async (req: FastifyRequest<{ Querystring: { skip?: string; take?: string } }>, rep) => {
-            const { skip, take } = req.query
-
-            try {
-                const count = await get_user_count(Prisma)
-                const data = await get_all_users({ skip, take }, Prisma)
-
-                if (count && data) {
-                    return rep.send({
-                        success: true,
-                        data,
-                        count
-                    })
-                }
-            }
-            catch (e) {
-                console.error(e);
-                return rep.status(500).send({ success: false, error: 'Internal Server Error' });
-            }
-        }
+        {schema: user_all_schema},
+        USER_CONTROLLER.GET_ALL_USERS
     )
 
+
+    /**
+     * @logic : find existing user with id
+     */
+    fastify.get(
+        '/:id',
+        {schema: user_find_schema},
+        USER_CONTROLLER.GET_USER_BY_ID
+    )
 
 
     /**
@@ -48,26 +33,38 @@ export async function UserRoutes(fastify: FastifyInstance) {
      */
     fastify.post(
         '/add',
-        {
-            schema: user_add_schema
-        },
-        async (req: FastifyRequest<{ Body: { phone: string } }>, rep) => {
-            const { phone } = req.body
-            try {
-                const check_user_phone = await get_user_by_id(phone, Prisma)
-                if (check_user_phone) {
-                    return rep.code(400).send({ msg: 'user exists' })
-                }
-                else {
-                    const user = await add_user(phone, Prisma)
-                    return rep.code(200).send({ success: true, user })
-                }
-            }
-            catch (e) {
-                console.error(e);
-                return rep.status(500).send({ success: false, error: 'Internal Server Error' });
-            }
-        }
+        {schema: user_add_schema},
+        USER_CONTROLLER.CREATE_USER
     )
 
+
+    /**
+     * @logic : edit existing user by id
+     */
+    fastify.put(
+        '/:id',
+        {schema: user_edit_schema},
+        USER_CONTROLLER.EDIT_USER
+    )
+
+ 
+    /**
+     * @logic : delete existing user with id
+     */
+    fastify.delete(
+        '/:id',
+        {schema: user_delete_schema},
+        USER_CONTROLLER.DELETE_USER
+    )
+
+
+        /**
+     * @logic : update user profile by id
+     */
+        fastify.put(
+            '/:id/profile',
+            {schema: user_edit_profile_schema},
+            USER_CONTROLLER.EDIT_USER_PROFILE
+            
+        )
 }

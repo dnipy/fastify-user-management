@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import * as user_routes from './users'
+import {UserRoutes} from './users'
 
 
 export async function ApiRouter(fastify: FastifyInstance) {
@@ -14,5 +14,5 @@ export async function ApiRouter(fastify: FastifyInstance) {
         })
     })
 
-    fastify.register(user_routes.UserRoutes, { prefix: 'user' })
+    fastify.register(UserRoutes, { prefix: 'user' })
 }

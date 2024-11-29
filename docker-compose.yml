@@ -11,5 +11,27 @@ services:
     volumes:
       - db_data:/var/lib/mysql
 
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: mysql://root:rootpass@db:3306/test_task
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: >
+      sh -c "
+      npm install &&
+      npm run build &&
+      npx prisma migrate dev &&
+      npx ts-node prisma/seed.ts &&
+      npm start"
+
+
 volumes:
   db_data:
