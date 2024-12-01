@@ -58,6 +58,10 @@ npm install
 ```
 ### 3. Build and start the Docker containers and Project and migrate db in dev mode and seed it and Run the Project
 ```bash
+npm run docker:up
+```
+or
+```bash
 docker-compose up -d
 ```
 

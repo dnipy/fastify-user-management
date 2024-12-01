@@ -26,12 +26,14 @@ services:
       - /app/node_modules
     command: >
       sh -c "
+      wait-for-it db:3306 -- &&
       npm install &&
       npm run build &&
       npx prisma migrate dev &&
       npx ts-node prisma/seed.ts &&
       npm start"
-
+    restart: on-failure
+  
 
 volumes:
   db_data:
